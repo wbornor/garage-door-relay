@@ -1,0 +1,71 @@
+/**
+ *  garage-door-relay
+ *
+ *  Copyright 2014 Wesley Bornor
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
+ *  in compliance with the License. You may obtain a copy of the License at:
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software distributed under the License is distributed
+ *  on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License
+ *  for the specific language governing permissions and limitations under the License.
+ *
+ */
+metadata {
+	definition (name: "garage-door-relay", author: "wbornor@gmail.com") {
+
+		command "pushLeft"
+		command "pushRight"
+	}
+
+	// simulator metadata
+	simulator {
+	}
+
+	// UI tile definitions
+	tiles {
+		standardTile("rightDoor", "device.rightDoor", width: 2, height: 2, canChangeIcon: true) {
+            state "waiting", label: 'Chrissie', action: "pushRight", icon:"st.doors.garage.garage-closed", backgroundColor: "#FFFFFF", nextState: "pushed"
+			state "pushed", label: 'Chrissie', action: "pushLeft", icon: "st.doors.garage.garage-closed", backgroundColor: "#ffa81e", nextState: "waiting"
+		}
+        
+		main "rightDoor"
+		details "rightDoor"
+	}
+}
+
+def parse(String description) {
+	
+    def name = null
+	def value = zigbee.parse(description)?.text
+    log.debug "Value is ${value}"
+	def linkText = getLinkText(device)
+	def descriptionText = getDescriptionText(description, linkText, value)
+	def handlerName = value
+	def isStateChange = value != "ping"
+	def displayed = value && isStateChange
+    
+    def incoming_cmd = value.split()
+    
+    name = incoming_cmd[0]
+    value = incoming_cmd[1]
+    
+	def result = [
+		value: value,
+        name: value != "ping" ? name : null,
+		handlerName: handlerName,
+		linkText: linkText,
+		descriptionText: descriptionText,
+		isStateChange: isStateChange,
+		displayed: displayed
+	]
+ 	log.debug result
+	return result
+}
+
+def pushRight() {
+	log.debug "Executing 'pushRight'"
+    zigbee.smartShield(text: "pushRight").format()
+}
