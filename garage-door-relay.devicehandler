@@ -37,20 +37,21 @@ metadata {
 }
 
 def parse(String description) {
-	
     def name = null
 	def value = zigbee.parse(description)?.text
-    log.debug "Value is ${value}"
+    log.debug "Value is '${value}'"
 	def linkText = getLinkText(device)
 	def descriptionText = getDescriptionText(description, linkText, value)
 	def handlerName = value
 	def isStateChange = value != "ping"
 	def displayed = value && isStateChange
     
-    def incoming_cmd = value.split()
+    try{
+		def incoming_cmd = value.split()    
+    	name = incoming_cmd[0]
+    	value = incoming_cmd[1]
+	}catch(e){  }
     
-    name = incoming_cmd[0]
-    value = incoming_cmd[1]
     
 	def result = [
 		value: value,
