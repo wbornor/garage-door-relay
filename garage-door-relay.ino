@@ -6,9 +6,7 @@
 #define PIN_THING_RX      3
 #define PIN_THING_TX      2
 #define PIN_RIGHT         4
-#define PIN_EXTERIOR      9
 #define PIN_LEFT          7
-#define PIN_INTERIOR      8
 #define OPEN              HIGH
 #define CLOSED            LOW
 #define PUSH_DELAY      1000  // milliseconds to keep the button "pushed"
@@ -40,24 +38,6 @@ void pushRight()
   smartthing.shieldSetLED(0, 0, 0); // off
   smartthing.send("rightDoor waiting");
   Serial.println("rightDoor waiting");
-}
-
-bool isPressed(int pin)
-{
-  return (digitalRead(pin) == CLOSED);
-}
-
-void updateRelayState()
-{
-  if (isPressed(PIN_EXTERIOR))
-  {
-      smartthing.send("switch on");
-      Serial.println("switch on");
-  }
-  if (isPressed(PIN_INTERIOR))
-  {
-    
-  } 
 }
 
 void setNetworkStateLED()
@@ -111,10 +91,7 @@ void setup()
   digitalWrite(PIN_RIGHT, HIGH);
   digitalWrite(PIN_LEFT, HIGH);
   digitalWrite(PIN_LED, LOW);   // set value to LOW (off) to match stateLED=0
-  
-  pinMode(PIN_EXTERIOR, INPUT_PULLUP);
-  pinMode(PIN_INTERIOR, INPUT_PULLUP);
-  
+
   if (isDebugEnabled)
   { // setup debug serial port
     Serial.begin(9600);         // setup serial with a baud rate of 9600
@@ -126,9 +103,7 @@ void loop()
 {
   // run smartthing logic
   smartthing.run();
-  
-  updateRelayState();
-  
+ 
   // Code left here to help debut network connections
   setNetworkStateLED();
 }
@@ -150,6 +125,5 @@ void messageCallout(String message)
   else if (message.equals("pushRight"))
   {
     pushRight();
-  }
-    
+  }   
 }
